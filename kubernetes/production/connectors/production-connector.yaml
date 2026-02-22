@@ -1,0 +1,166 @@
+apiVersion: kafka.strimzi.io/v1beta2
+kind: KafkaConnector
+metadata:
+  name: mysql-source-innovate-connector-with-filter-3
+  labels:
+    strimzi.io/cluster: kafka-connect-cluster
+  namespace: kafka
+spec:
+  class: io.debezium.connector.mysql.MySqlConnector
+  tasksMax: 1
+  state: running #string (one of [running, paused, stopped])
+  autoRestart:
+    enabled: true
+    maxRestarts: 2000
+  config: #The Kafka Connector configuration. The following properties cannot be set: name, connector.class, tasks.max.    name: mysql-source-connector
+    # Database connection configuration
+    database.hostname:  ${secrets:kafka/mysql-source-innovate-secret:host}
+    database.port: 3306
+    database.user: ${secrets:kafka/mysql-source-innovate-secret:username}
+    database.password: ${secrets:kafka/mysql-source-innovate-secret:password}
+    database.server.id: 1001
+    database.server.name: mysql-master
+    database.dbname: ${secrets:kafka/mysql-source-innovate-secret:database}
+    database.include.list: ${secrets:kafka/mysql-source-innovate-secret:database}
+
+    table.exclude.list: innov8-system.client_addresses, innov8-system.password_reset_tokens,  innov8-system.migrations, innov8-system.cache_locks,  innov8-system.cache,  innov8-system.telescope_monitoring,  innov8-system.jobs, innov8-system.failed_jobs,  innov8-system.sessions, 	innov8-system.oauth_auth_codes, innov8-system.webhook_calls,  innov8-system.oauth_clients, innov8-system.personal_access_tokens, innov8-system.money_fellows_api_keys, innov8-system.push_notification_tokens, innov8-system.oauth_access_tokens, innov8-system.oauth_refresh_token, innov8-system.oauth_personal_access_clients, innov8-system.oauth_personal_access_clients, innov8-system.model_has_permissions, innov8-system.permissions, innov8-system.role_has_permissions, innov8-system.permission_roles, innov8-system.model_has_roles
+    # table.include.list:
+    
+    # Kafka connection configuration
+    schema.history.internal.kafka.bootstrap.servers:  primary-kafka-bootstrap:9092
+    schema.history.internal.kafka.topic: ${secrets:kafka/mysql-source-innovate-secret:database}-schema-change-history
+    topic.prefix: ${secrets:kafka/mysql-source-innovate-secret:database}
+
+    # Transformation configuration
+    transforms: dropPrefix
+    transforms.dropPrefix.type: org.apache.kafka.connect.transforms.RegexRouter
+    transforms.dropPrefix.regex: ${secrets:kafka/mysql-source-innovate-secret:database}.${secrets:kafka/mysql-source-innovate-secret:database}\.(.*)
+    transforms.dropPrefix.replacement: ${secrets:kafka/mysql-source-innovate-secret:database}.$1
+    
+    ## Only Map objects supported in absence of schema for [mask fields], found: null at org.apache.kafka.connect.transforms.util.Requirements.requireMap(Requirements.java:38) at
+    # column.mask.with.4.chars: moneyfellows.user.first_name, moneyfellows.user.last_name   
+    ## types that is not straightforward to mask [decimals,timestamp,enum,blob,json]
+    
+    column.exclude.list:  innov8-system.clients.name, innov8-system.clients.nationality, innov8-system.clients.national_id, innov8-system.clients.occupation, innov8-system.clients.national_id_expiry_date, innov8-system.clients.national_id_address, innov8-system.clients.email_address, innov8-system.clients.phone, innov8-system.orders.client_otp, innov8-system.orders.client_otp_verified, innov8-system.orders.client_location, innov8-system.orders.client_data, innov8-system.orders.client_name, innov8-system.orders.client_national_id, innov8-system.orders.client_phone1, innov8-system.orders.client_phone2, innov8-system.order_result_qc_calls.client_feedback
+
+    converters : tinyint-one-to-boolean, jdbc-sink
+    tinyint-one-to-boolean.type : io.debezium.connector.binlog.converters.TinyIntOneToBooleanConverter
+    # tinyint-one-to-boolean.selector : .*.MY_TABLE.DATA
+    tinyint-one-to-boolean.length.checker : true
+
+    jdbc-sink.type: io.debezium.connector.binlog.converters.JdbcSinkDataTypesConverter
+    # jdbc-sink.selector.boolean: .*.MY_TABLE.BOOL_COL
+    # jdbc-sink.selector.real: .*.MY_TABLE.REAL_COL
+    # jdbc-sink.selector.string: .*.MY_TABLE.STRING_COL
+    jdbc-sink.treat.real.as.double: true
+
+
+    #message.key.columns : <fully-qualified_tableName>:<keyColumn>,<keyColumn> #By default, Debezium uses the primary key column of a table as the message key for records that it emits. In place of the default, or to specify a key for tables that lack a primary key, you can configure custom message keys based on one or more columns.
+
+    # Error handling configuration
+    event.processing.failure.handling.mode: fail
+    inconsistent.schema.handling.mode: fail
+    errors.max.retries: 1000000000
+
+    # Other configuration
+    include.schema.changes: true
+    include.schema.comments: true
+    column.propagate.source.type: .*
+    datatype.propagate.source.type: .*
+
+    connect.keep.alive: true
+    include.query: true
+    producer.override.batch.size: 258080
+    producer.override.linger.ms: 100 
+    producer.override.max.request.size: 104857600
+    poll.interval.ms: 100
+    # max.batch.size: 30000
+    # max.queue.size: 120000
+
+
+    time.precision.mode : adaptive_time_microseconds #connect   #The connector captures the date, datetime and timestamp values exactly as in the database using either millisecond, microsecond, or nanosecond precision values based on the database column’s type, with the exception of TIME type fields, which are always captured as microseconds.
+    decimal.handling.mode : precise
+    bigint.unsigned.handling.mode: precise  
+    binary.handling.mode: bytes
+
+    snapshot.locking.mode: none #[none,minimal,extended]  # minimal caused metadata locks on rds, when global read locks fails, table locks is activated by default
+    snapshot.max.threads: 1 #incubating feature. default is one
+    snapshot.mode: initial  #no_data #initial
+    database.initial.statements: "SET SESSION wait_timeout=172800;SET SESSION interactive_timeout=172800;SET SESSION net_write_timeout=7200;SET SESSION net_read_timeout=7200;SET SESSION lock_wait_timeout=7200;SET SESSION innodb_lock_wait_timeout=7200;"
+    #snapshot.fetch.size: 10000  # turn on if connector failed to start streaming after snapshot
+
+---
+apiVersion: kafka.strimzi.io/v1beta2
+kind: KafkaConnector
+metadata:
+  name: mysql-sink-innovate-connector-2
+  labels:
+    strimzi.io/cluster: kafka-connect-cluster
+  namespace: kafka
+spec:
+  class: io.debezium.connector.jdbc.JdbcSinkConnector
+  tasksMax: 5
+  state: running #string (one of [running, paused, stopped])
+  autoRestart:
+    enabled: true
+    maxRestarts: 2000
+  config: #The Kafka Connector configuration. The following properties cannot be set: name, connector.class, tasks.max.
+    connection.url: jdbc:mysql://${secrets:kafka/mysql-sink-innovate-secret:host}:3306/innov8-system?sessionVariables=foreign_key_checks=0
+    connection.username: ${secrets:kafka/mysql-sink-innovate-secret:username}
+    connection.password: ${secrets:kafka/mysql-sink-innovate-secret:password}
+
+    # Kafka connection configuration
+    topics.regex: innov8-system\.(.*)
+
+    # Schema handling configuration
+    # schema.history.internal.kafka.topic: innov8-system-schema-change-history
+    schema.evolution: basic
+    
+    predicates: isTombstone
+    predicates.isTombstone.type: org.apache.kafka.connect.transforms.predicates.RecordIsTombstone
+
+    # Transformation configuration
+    transforms: dropPrefix, unwrap, TimestampConverterCreatedAt, TimestampConverterUpdatedAt
+    transforms.dropPrefix.type: org.apache.kafka.connect.transforms.RegexRouter
+    transforms.dropPrefix.regex: innov8-system\.(.*)
+    transforms.dropPrefix.replacement: $1
+    quote.identifiers: true
+
+    transforms.unwrap.type: io.debezium.transforms.ExtractNewRecordState
+    transforms.unwrap.delete.tombstone.handling.mode: tombstone 
+    # transforms.unwrap.add.fields: table,lsn
+
+    transforms.TimestampConverterCreatedAt.type: org.apache.kafka.connect.transforms.TimestampConverter$Value
+    transforms.TimestampConverterCreatedAt.target.type: Timestamp
+    transforms.TimestampConverterCreatedAt.format: yyyy-MM-dd'T'HH:mm:ss'Z'
+    transforms.TimestampConverterCreatedAt.field: created_at
+    transforms.TimestampConverterCreatedAt.predicate: isTombstone
+    transforms.TimestampConverterCreatedAt.negate: true
+
+    transforms.TimestampConverterUpdatedAt.type: org.apache.kafka.connect.transforms.TimestampConverter$Value
+    transforms.TimestampConverterUpdatedAt.target.type: Timestamp
+    transforms.TimestampConverterUpdatedAt.format: yyyy-MM-dd'T'HH:mm:ss'Z'
+    transforms.TimestampConverterUpdatedAt.field: updated_at
+    transforms.TimestampConverterUpdatedAt.predicate: isTombstone
+    transforms.TimestampConverterUpdatedAt.negate: true
+
+    # transforms.addSource.type: org.apache.kafka.connect.transforms.InsertField$Value
+    # transforms.addSource.static.field: source1
+    # transforms.addSource.static.value: debezium
+    # transforms.addSource.predicate: isTombstone
+    # transforms.addSource.negate: true
+
+    # transforms.MaskField.type: org.apache.kafka.connect.transforms.MaskField$Value
+    # transforms.MaskField.fields: name
+    # transforms.MaskField.replacement: "XXXX"
+    # transforms.MaskField.predicate: isTombstone
+    # transforms.MaskField.negate: true
+
+    insert.mode: upsert
+    table.name.format: ${topic}
+    delete.enabled: true
+    primary.key.mode: record_key
+
+    # # Batch and polling settings
+    # batch.size: 2500
+    # consumer.override.max.poll.records: 2500

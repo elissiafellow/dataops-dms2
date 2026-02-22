@@ -1,0 +1,43 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: monitoring
+  namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-wave: "11"
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: default
+  sources:
+    - chart: kube-prometheus-stack
+      repoURL: https://prometheus-community.github.io/helm-charts
+      targetRevision: 65.5.1  # Replace with the desired version
+      helm:
+        releaseName: monitoring
+        valueFiles:
+          - "$values/kubernetes/argocd-helmcharts/values/kube-prometheus-values.yaml"
+    - repoURL: 'git@github.com:moneYOUnion/dataops-dms.git'
+      targetRevision: master
+      ref: values
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: monitoring
+  syncPolicy:
+    automated:
+      selfHeal: false
+      prune: true
+      allowEmpty: false
+    syncOptions:
+      - Validate=false
+      - CreateNameSpace=true
+      - PruneProgationPolicy=foreground
+      - PruneLast=true
+      - Replace=false
+      - ApplyOutOfSyncOnly=true
+      - ServerSideApply=true
+  ignoreDifferences:
+  - jsonPointers:
+    - /spec/volumeName
+    - /spec/storageClassName
+    kind: PersistentVolumeClaim

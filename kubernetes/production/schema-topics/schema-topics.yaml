@@ -1,0 +1,84 @@
+apiVersion: kafka.strimzi.io/v1beta2
+kind: KafkaTopic
+metadata:
+  name: innov8-system
+  namespace: kafka
+  labels:
+    strimzi.io/cluster: primary
+spec:
+  replicas: 3
+  partitions: 1
+  config:
+    retention.ms: -1
+    retention.bytes: -1
+---
+apiVersion: kafka.strimzi.io/v1beta2
+kind: KafkaTopic
+metadata:
+  name: innov8-system-schema-change-history
+  namespace: kafka
+  labels:
+    strimzi.io/cluster: primary
+spec:
+  replicas: 3
+  partitions: 1
+  config:
+    retention.ms: -1
+    retention.bytes: -1
+---
+apiVersion: kafka.strimzi.io/v1beta2
+kind: KafkaTopic
+metadata:
+  name: ni
+  namespace: kafka
+  labels:
+    strimzi.io/cluster: primary
+spec:
+  replicas: 3
+  partitions: 1
+  config:
+    retention.ms: -1
+    retention.bytes: -1
+---
+apiVersion: kafka.strimzi.io/v1beta2
+kind: KafkaTopic
+metadata:
+  name: ni-schema-change-history
+  namespace: kafka
+  labels:
+    strimzi.io/cluster: primary
+spec:
+  replicas: 3
+  partitions: 1
+  config:
+    retention.ms: -1
+    retention.bytes: -1
+
+---
+apiVersion: kafka.strimzi.io/v1beta2
+kind: KafkaTopic
+metadata:
+  name: loyalty
+  namespace: kafka
+  labels:
+    strimzi.io/cluster: primary
+spec:
+  replicas: 3
+  partitions: 1
+  config:
+    retention.ms: -1
+    retention.bytes: -1
+---
+apiVersion: kafka.strimzi.io/v1beta2
+kind: KafkaTopic
+metadata:
+  name: loyalty-schema-change-history
+  namespace: kafka
+  labels:
+    strimzi.io/cluster: primary
+spec:
+  replicas: 3
+  partitions: 1
+  config:
+    retention.ms: -1
+    retention.bytes: -1

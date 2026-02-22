@@ -1,0 +1,30 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: kafka-connect
+  namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-wave: "8"
+    argocd.argoproj.io/tracking-id: "kafka-connect:argoproj.io/Application:argocd/kafka-connect"
+spec:
+  project: default
+  source:
+    repoURL: 'git@github.com:moneYOUnion/dataops-dms.git'
+    targetRevision: master
+    path: kubernetes/production/kafka-connect
+  destination:
+    server: 'https://kubernetes.default.svc'
+    namespace: default
+  syncPolicy:
+    automated:
+      selfHeal: false
+      prune: false
+    syncOptions:
+      - Validate=true
+      - CreateNameSpace=true
+      - PruneProgationPolicy=foreground
+      - PruneLast=false
+      - Replace=false
+      - ApplyOutOfSyncOnly=false
+      - ServerSideApply=false
+      - RespectIgnoreDifferences=false # whether to ignore differences while syncing or not, used when explicitly use ignoredifference feature

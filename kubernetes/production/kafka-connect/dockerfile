@@ -1,0 +1,48 @@
+ARG CONFLUENT_VERSION=7.2.4
+
+# Install Confluent Avro converter
+FROM confluentinc/cp-kafka-connect:${CONFLUENT_VERSION} as cp
+# Reassign version
+ARG CONFLUENT_VERSION
+RUN confluent-hub install --no-prompt confluentinc/kafka-connect-avro-converter:${CONFLUENT_VERSION}
+
+# Install Debezium MySQL Connector from Maven
+FROM quay.io/strimzi/kafka:latest-kafka-3.8.0
+USER root:root
+
+# Copy Confluent Avro converter plugin from the Confluent image
+RUN mkdir -p /opt/kafka/plugins/avro/
+COPY --from=cp /usr/share/confluent-hub-components/confluentinc-kafka-connect-avro-converter/lib /opt/kafka/plugins/avro/
+
+# Connector plugin - Debezium MySQL
+RUN mkdir -p /opt/kafka/plugins/debezium-source \
+    && curl -f -L \
+    --output /opt/kafka/plugins/debezium-source.tgz \
+    https://repo1.maven.org/maven2/io/debezium/debezium-connector-mysql/3.0.2.Final/debezium-connector-mysql-3.0.2.Final-plugin.tar.gz \
+    && tar xvfz /opt/kafka/plugins/debezium-source.tgz -C /opt/kafka/plugins/debezium-source \
+    && rm -vf /opt/kafka/plugins/debezium-source.tgz
+
+# Install Debezium JDBC Connector
+RUN mkdir -p /opt/kafka/plugins/debezium-jdbc \
+    && curl -f -L \
+    --output /opt/kafka/plugins/debezium-jdbc.tgz \
+    https://repo1.maven.org/maven2/io/debezium/debezium-connector-jdbc/3.0.2.Final/debezium-connector-jdbc-3.0.2.Final-plugin.tar.gz \
+    && tar xvfz /opt/kafka/plugins/debezium-jdbc.tgz -C /opt/kafka/plugins/debezium-jdbc \
+    && rm -vf /opt/kafka/plugins/debezium-jdbc.tgz
+
+# Install Confluent JDBC Sink Connector
+RUN mkdir -p /opt/kafka/plugins/confluent-sink-jdbc \
+    && curl -f -L \
+    --output /opt/kafka/plugins/confluent-sink-jdbc.zip \
+    https://d2p6pa21dvn84.cloudfront.net/api/plugins/confluentinc/kafka-connect-jdbc/versions/10.7.4/confluentinc-kafka-connect-jdbc-10.7.4.zip \
+    && unzip /opt/kafka/plugins/confluent-sink-jdbc.zip -d /opt/kafka/plugins/confluent-sink-jdbc \
+    && rm -vf /opt/kafka/plugins/confluent-sink-jdbc.zip
+
+# Install MySQL JDBC driver for Confluent JDBC Sink Connector
+RUN mkdir -p /opt/kafka/plugins/mysql-connector-java \
+    && curl -f -L \
+    --output /opt/kafka/plugins/mysql-connector-java.jar \
+    https://repo1.maven.org/maven2/mysql/mysql-connector-java/8.0.22/mysql-connector-java-8.0.22.jar
+
+# Ensure correct permissions for the plugins
+USER 1001
