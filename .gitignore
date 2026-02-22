@@ -6,3 +6,4 @@
 *.tfstate
 *.tfstate.*
 .terraform.lock.hcl
+TERRAFORM_INFRASTRUCTURE_EXPLAINED.md
