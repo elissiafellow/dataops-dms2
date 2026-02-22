@@ -9,7 +9,7 @@ spec:
   project: default
   source:
     repoURL: 'https://github.com/elissiafellow/dataops-dms2.git'
-    targetRevision: master
+    targetRevision: main
     path: kubernetes/production/strimzi-operator
   destination:
     server: 'https://kubernetes.default.svc'

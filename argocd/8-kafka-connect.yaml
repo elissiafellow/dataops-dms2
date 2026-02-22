@@ -10,7 +10,7 @@ spec:
   project: default
   source:
     repoURL: 'https://github.com/elissiafellow/dataops-dms2.git'
-    targetRevision: master
+    targetRevision: main
     path: kubernetes/production/kafka-connect
   destination:
     server: 'https://kubernetes.default.svc'
