@@ -17,7 +17,7 @@ spec:
         releaseName: monitoring
         valueFiles:
           - "$values/kubernetes/argocd-helmcharts/values/kube-prometheus-values.yaml"
-    - repoURL: 'git@github.com:moneYOUnion/dataops-dms.git'
+    - repoURL: 'https://github.com/elissiafellow/dataops-dms2.git'
       targetRevision: master
       ref: values
   destination:
