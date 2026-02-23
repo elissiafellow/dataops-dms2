@@ -16,7 +16,7 @@ rbac:
   serviceAccount:
     name: cluster-autoscaler
     annotations:
-      eks.amazonaws.com/role-arn: arn:aws:iam::528757825065:role/eks-cluster-autoscaler
+      eks.amazonaws.com/role-arn: arn:aws:iam::367896522183:role/eks-cluster-autoscaler
 
 autoDiscovery:
   enabled: true
@@ -24,4 +24,4 @@ autoDiscovery:
 
 clusterName: demo-env
 awsRegion: eu-central-1
-vpcId: vpc-0721e10c9e870cfc2
+vpcId: vpc-0e8f916ec248057e4
