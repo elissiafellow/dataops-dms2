@@ -32,4 +32,4 @@ db_publicly_accessible = true # Set to false for production (requires bastion/VP
 # External IPs allowed to access databases (optional)
 # Add your IP here if you want to connect from your local machine
 # Example: ["1.2.3.4/32", "5.6.7.8/32"]
-allowed_external_ips = []
+allowed_external_ips = ["41.239.165.210/32"]

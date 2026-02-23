@@ -10,16 +10,16 @@ data "aws_vpc" "main" {
   }
 }
 
-# Get subnets from the VPC (use private subnets for databases)
+# Get public subnets from the VPC (required for publicly accessible databases)
 # RDS requires subnets in at least 2 availability zones
-data "aws_subnets" "private" {
+data "aws_subnets" "public" {
   filter {
     name   = "vpc-id"
     values = [data.aws_vpc.main.id]
   }
   filter {
     name   = "tag:Type"
-    values = ["private"]
+    values = ["public"]
   }
 }
 
@@ -70,7 +70,7 @@ resource "aws_security_group" "db_sg" {
 # RDS requires subnets in at least 2 AZs
 resource "aws_db_subnet_group" "db_subnet" {
   name       = "${var.environment}-db-subnet-group"
-  subnet_ids = data.aws_subnets.private.ids
+  subnet_ids = data.aws_subnets.public.ids
 
   tags = {
     Name        = "${var.environment}-db-subnet-group"
@@ -128,9 +128,8 @@ resource "aws_db_instance" "source_db" {
   maintenance_window      = "mon:04:00-mon:05:00"
 
   # For demo/testing - skip final snapshot on destroy
-  skip_final_snapshot       = true
-  final_snapshot_identifier = "${var.environment}-source-db-final-snapshot"
-  deletion_protection       = false
+  skip_final_snapshot = true
+  deletion_protection = false
 
   # Make publicly accessible for testing (optional - set to false for production)
   publicly_accessible = var.db_publicly_accessible
@@ -141,11 +140,8 @@ resource "aws_db_instance" "source_db" {
   # Enable storage autoscaling for demo (optional)
   max_allocated_storage = var.db_max_allocated_storage
 
-  # Enable performance insights (optional, costs extra)
+  # Disable performance insights to save costs
   performance_insights_enabled = false
-
-  # Enable enhanced monitoring (optional)
-  monitoring_interval = 0
 
   tags = {
     Name        = "${var.environment}-source-db"
@@ -176,9 +172,8 @@ resource "aws_db_instance" "dest_db" {
   maintenance_window      = "mon:04:00-mon:05:00"
 
   # For demo/testing - skip final snapshot on destroy
-  skip_final_snapshot       = true
-  final_snapshot_identifier = "${var.environment}-dest-db-final-snapshot"
-  deletion_protection       = false
+  skip_final_snapshot = true
+  deletion_protection = false
 
   # Make publicly accessible for testing (optional)
   publicly_accessible = var.db_publicly_accessible
@@ -191,7 +186,6 @@ resource "aws_db_instance" "dest_db" {
 
   # Disable performance insights for cost savings
   performance_insights_enabled = false
-  monitoring_interval          = 0
 
   tags = {
     Name        = "${var.environment}-dest-db"
