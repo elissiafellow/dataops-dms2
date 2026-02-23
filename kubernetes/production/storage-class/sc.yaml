@@ -1,0 +1,14 @@
+kind: StorageClass
+apiVersion: storage.k8s.io/v1
+metadata:
+  name: kafka-cluster-sc
+provisioner: ebs.csi.aws.com
+parameters:
+  type: gp2
+  encrypted: "true"
+  # fsType: ext4
+  # iops: "3000"
+  # throughput: "125"
+volumeBindingMode: WaitForFirstConsumer # EBS volumes are AZ specific
+reclaimPolicy: Retain #Delete 
+allowVolumeExpansion: true # Optional: If you want to allow volume expansion
