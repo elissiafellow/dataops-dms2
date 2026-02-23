@@ -6,7 +6,7 @@ metadata:
     strimzi.io/cluster: primary
   namespace: kafka
 spec:
-  replicas: 3
+  replicas: 1  # Reduced from 3 for learning setup
   roles:
     - controller
   storage:
@@ -63,7 +63,7 @@ metadata:
     strimzi.io/cluster: primary
   namespace: kafka
 spec:
-  replicas: 3
+  replicas: 1  # Reduced from 3 for learning setup
   roles:
     - broker
   storage:
@@ -178,13 +178,13 @@ spec:
         type: internal
         tls: true
     config:
-      offsets.topic.replication.factor: 3
+      offsets.topic.replication.factor: 1  # Reduced from 3 for learning setup
       log.retention.hours: 672
       log.segment.bytes: 1073741824
-      transaction.state.log.replication.factor: 3 
-      transaction.state.log.min.isr: 2 
-      default.replication.factor: 3 
-      min.insync.replicas: 2 
+      transaction.state.log.replication.factor: 1  # Reduced from 3 for learning setup
+      transaction.state.log.min.isr: 1  # Reduced from 2 for learning setup
+      default.replication.factor: 1  # Reduced from 3 for learning setup
+      min.insync.replicas: 1  # Reduced from 2 for learning setup 
       num.io.threads: 2
       num.network.threads: 3
       num.partitions: 1

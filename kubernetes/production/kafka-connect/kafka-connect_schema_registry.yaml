@@ -7,7 +7,7 @@ metadata:
   namespace: kafka
 spec:
   version: 3.8.0
-  replicas: 2
+  replicas: 1  # Reduced from 2 for learning setup
   bootstrapServers: primary-kafka-bootstrap:9092
   image: xxxxxxx.dkr.ecr.eu-central-1.amazonaws.com/kafka-cluster:latest  #docker.io/mm008/my-connect-cluster:latest
   rack:
@@ -19,9 +19,9 @@ spec:
     offset.storage.topic: connect-cluster-offsets
     config.storage.topic: connect-cluster-configs
     status.storage.topic: connect-cluster-status
-    config.storage.replication.factor: 3
-    offset.storage.replication.factor: 3
-    status.storage.replication.factor: 3
+    config.storage.replication.factor: 1  # Reduced from 3 for learning setup
+    offset.storage.replication.factor: 1  # Reduced from 3 for learning setup
+    status.storage.replication.factor: 1  # Reduced from 3 for learning setup
     offset.flush.interval.ms: 1000
 
     connector.client.config.override.policy: All ## added trying to increase the throughput of sink connector
