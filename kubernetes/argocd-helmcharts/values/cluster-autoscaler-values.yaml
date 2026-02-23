@@ -20,8 +20,8 @@ rbac:
 
 autoDiscovery:
   enabled: true
-  clusterName: demo-env
+  clusterName: demo-eks
 
-clusterName: demo-env
+clusterName: demo-eks
 awsRegion: eu-central-1
 vpcId: vpc-0e8f916ec248057e4
