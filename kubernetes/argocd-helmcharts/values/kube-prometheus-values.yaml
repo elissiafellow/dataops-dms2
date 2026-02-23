@@ -1,0 +1,138 @@
+# https://github.com/prometheus-community/helm-charts/blob/main/charts/kube-prometheus-stack/values.yaml
+# https://runbooks.prometheus-operator.dev/runbooks/kubernetes/cputhrottlinghigh/
+# https://mailtrap.io/blog/outlook-smtp/#How-to-configure-Outlook-IMAP-settings
+prometheusOperator:
+  nodeSelector:
+    kafka-cluster-role: admin-tools
+
+kube-state-metrics:
+  nodeSelector:
+    kafka-cluster-role: admin-tools
+
+grafana:
+  enabled: true
+  adminPassword: "YourGrafanaPassword"
+  service:
+    type: ClusterIP
+  nodeSelector:
+    kafka-cluster-role: admin-tools
+  resources:
+    requests:
+      memory: "512Mi"
+      cpu: "250m"
+    limits:
+      memory: "2000Mi"
+      cpu: "2000m"
+  persistence:
+    enabled: true
+    accessModes:
+      - ReadWriteOnce
+    size: 10Gi
+    storageClassName: "kafka-cluster-sc"  # Replace with your storage class
+        
+prometheus:
+  prometheusSpec:
+    serviceAccountName: prometheus-server
+    serviceMonitorSelector: {}
+    ruleSelector: {}   
+    scrapeInterval: 10s
+    retention: 14d
+    retentionSize: 40GB
+    podMonitorSelector:
+      matchLabels:
+        app: strimzi
+    labels:
+      app: strimzi
+    nodeSelector:
+      kafka-cluster-role: admin-tools
+    resources:
+      requests:
+        memory: "1Gi"
+        cpu: "500m"
+      limits:
+        memory: "6Gi"
+        cpu: "2000m"
+    storageSpec:
+      volumeClaimTemplate:
+        spec:
+          accessModes: ["ReadWriteOnce"]
+          resources:
+            requests:
+              storage: 50Gi
+          storageClassName: "kafka-cluster-sc"  # Replace with your storage class
+    
+alertmanager:
+    alertmanagerSpec:
+      nodeSelector:
+        kafka-cluster-role: admin-tools
+    config:
+      global:
+        smtp_smarthost: 'smtp.gmail.com:587'
+        resolve_timeout: 5m
+        smtp_from: 'alertmanagermf@gmail.com'
+        smtp_auth_username: "alertmanagermf@gmail.com"
+        smtp_auth_password: "kdbe legz xvsp gctl"  # Use your Gmail App Password
+        smtp_require_tls: true
+      route:
+        group_by: ['alertname', 'severity', 'job']
+        group_wait: 30s
+        group_interval: 5m
+        repeat_interval: 12h
+        receiver: 'smtp'
+        routes:
+          - receiver: 'smtp'
+      receivers:
+        - name: 'smtp'
+          email_configs:
+          - to: 'mahmoud.mohamed@moneyfellows.com'
+            require_tls: true
+      templates:
+      - '/etc/alertmanager/config/*.tmpl'
+
+nodeExporter:
+  nodeExporterSpec:
+    resources:
+      requests:
+        memory: "100Mi"
+        cpu: "100m"
+      limits:
+        memory: "256Mi"
+        cpu: "150m"
+    
+defaultRules:
+  create: true
+  rules:
+    alertmanager: true
+    etcd: true
+    configReloaders: true
+    general: true
+    k8sContainerCpuUsageSecondsTotal: true
+    k8sContainerMemoryCache: true
+    k8sContainerMemoryRss: true
+    k8sContainerMemorySwap: true
+    k8sContainerResource: true
+    k8sContainerMemoryWorkingSetBytes: true
+    k8sPodOwner: true
+    kubeApiserverAvailability: false
+    kubeApiserverBurnrate: false
+    kubeApiserverHistogram: false
+    kubeApiserverSlos: false
+    kubeControllerManager: false
+    kubelet: true
+    kubeProxy: true
+    kubePrometheusGeneral: true
+    kubePrometheusNodeRecording: true
+    kubernetesApps: true
+    kubernetesResources: true
+    kubernetesStorage: true
+    kubernetesSystem: true
+    kubeSchedulerAlerting: false
+    kubeSchedulerRecording: false
+    kubeStateMetrics: true
+    network: true
+    node: true
+    nodeExporterAlerting: true
+    nodeExporterRecording: true
+    prometheus: true
+    prometheusOperator: true
+    windows: true

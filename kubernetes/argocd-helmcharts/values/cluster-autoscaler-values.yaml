@@ -1,0 +1,27 @@
+# rbac:
+#   serviceAccount:
+#     name: cluster-autoscaler
+#     annotations:
+#       eks.amazonaws.com/role-arn: "{{ your_iam_role_arn }}"
+
+# autoDiscovery:
+#   enabled: true
+#   clusterName: "{{ your_eks_cluster_name }}"
+
+# clusterName: "{{ your_eks_cluster_name }}"
+# awsRegion: "{{ your_region }}"
+# vpcId: "{{ your_vpc_id }}"
+
+rbac:
+  serviceAccount:
+    name: cluster-autoscaler
+    annotations:
+      eks.amazonaws.com/role-arn: arn:aws:iam::528757825065:role/eks-cluster-autoscaler
+
+autoDiscovery:
+  enabled: true
+  clusterName: demo-env
+
+clusterName: demo-env
+awsRegion: eu-central-1
+vpcId: vpc-0721e10c9e870cfc2

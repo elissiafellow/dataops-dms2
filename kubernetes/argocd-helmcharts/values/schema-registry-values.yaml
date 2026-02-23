@@ -1,0 +1,43 @@
+
+# https://github.com/bitnami/charts/blob/main/bitnami/schema-registry/values.yaml
+# https://github.com/bitnami/charts/blob/main/bitnami/schema-registry/README.md
+global:
+  defaultStorageClass: "kafka-cluster-sc"
+
+kafka:
+  bootstrapServers: "primary-kafka-bootstrap:9092"
+  image:
+    repository: bitnamilegacy/kafka
+    tag: 3.9.0-debian-12-r6
+
+service:
+  type: ClusterIP
+
+replicaCount: 3
+
+avroCompatibilityLevel: none
+
+affinity:
+  nodeAffinity:
+    requiredDuringSchedulingIgnoredDuringExecution:
+      nodeSelectorTerms:
+        - matchExpressions:
+            - key: kafka-cluster-role
+              operator: In
+              values:
+                - kafka-cluster
+
+persistence:
+  enabled: true
+  size: 10Gi
+  storageClass: kafka-cluster-sc
+  accessModes:
+    - ReadWriteOnce
+
+resources:
+  requests:
+    cpu: "100m"
+    memory: "250Mi"
+  limits:
+    cpu: "250"
+    memory: "1Gi"
