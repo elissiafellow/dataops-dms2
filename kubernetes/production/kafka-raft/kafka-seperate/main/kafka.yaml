@@ -26,16 +26,19 @@ spec:
         memory: "1500Mi"
         cpu: "500m"
   template:
-    pod:
-      affinity:
-        nodeAffinity:
-          requiredDuringSchedulingIgnoredDuringExecution:
-            nodeSelectorTerms:
-              - matchExpressions:
-                  - key: kafka-cluster-role
-                    operator: In
-                    values:
-                      - "kafka-cluster"
+    pod: {}
+    # Commented out node affinity - requires nodes with label kafka-cluster-role=kafka-cluster
+    # Uncomment when dedicated Kafka nodes are available
+    # pod:
+    #   affinity:
+    #     nodeAffinity:
+    #       requiredDuringSchedulingIgnoredDuringExecution:
+    #         nodeSelectorTerms:
+    #           - matchExpressions:
+    #               - key: kafka-cluster-role
+    #                 operator: In
+    #                 values:
+    #                   - "kafka-cluster"
     persistentVolumeClaim:
       metadata:
         annotations:
@@ -91,16 +94,19 @@ spec:
         deleteClaim: false
         class: kafka-cluster-sc
   template:
-    pod:
-      affinity:
-        nodeAffinity:
-          requiredDuringSchedulingIgnoredDuringExecution:
-            nodeSelectorTerms:
-              - matchExpressions:
-                  - key: kafka-cluster-role
-                    operator: In
-                    values:
-                      - "kafka-cluster"
+    pod: {}
+    # Commented out node affinity - requires nodes with label kafka-cluster-role=kafka-cluster
+    # Uncomment when dedicated Kafka nodes are available
+    # pod:
+    #   affinity:
+    #     nodeAffinity:
+    #       requiredDuringSchedulingIgnoredDuringExecution:
+    #         nodeSelectorTerms:
+    #           - matchExpressions:
+    #               - key: kafka-cluster-role
+    #                 operator: In
+    #                 values:
+    #                   - "kafka-cluster"
     persistentVolumeClaim:
       metadata:
         annotations:
@@ -215,16 +221,7 @@ spec:
     topicOperator: {}
     userOperator: {}
     template:
-      pod:
-        affinity:
-          nodeAffinity:
-            requiredDuringSchedulingIgnoredDuringExecution:
-              nodeSelectorTerms:
-                - matchExpressions:
-                    - key: kafka-cluster-role
-                      operator: In
-                      values:
-                        - "kafka-cluster"
+      pod: {}
   kafkaExporter:
     groupRegex: ".*"
     topicRegex: ".*"
@@ -237,16 +234,7 @@ spec:
         cpu: "400m"
     showAllOffsets: false #Whether show the offset/lag for all consumer group, otherwise, only show connected consumer groups.
     template:
-      pod:
-        affinity:
-          nodeAffinity:
-            requiredDuringSchedulingIgnoredDuringExecution:
-              nodeSelectorTerms:
-                - matchExpressions:
-                    - key: kafka-cluster-role
-                      operator: In
-                      values:
-                        - "kafka-cluster"
+      pod: {}
 ---
 kind: ConfigMap
 apiVersion: v1
