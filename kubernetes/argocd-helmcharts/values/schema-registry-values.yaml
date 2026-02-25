@@ -13,19 +13,21 @@ kafka:
 service:
   type: ClusterIP
 
-replicaCount: 3
+replicaCount: 1  # Reduced from 3 for learning setup
 
 avroCompatibilityLevel: none
 
-affinity:
-  nodeAffinity:
-    requiredDuringSchedulingIgnoredDuringExecution:
-      nodeSelectorTerms:
-        - matchExpressions:
-            - key: kafka-cluster-role
-              operator: In
-              values:
-                - kafka-cluster
+# Commented out node affinity - requires nodes with label kafka-cluster-role=kafka-cluster
+# Uncomment when dedicated Kafka nodes are available
+# affinity:
+#   nodeAffinity:
+#     requiredDuringSchedulingIgnoredDuringExecution:
+#       nodeSelectorTerms:
+#         - matchExpressions:
+#             - key: kafka-cluster-role
+#               operator: In
+#               values:
+#                 - kafka-cluster
 
 persistence:
   enabled: true
