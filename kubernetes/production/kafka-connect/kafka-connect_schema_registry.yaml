@@ -46,16 +46,18 @@ spec:
     pod:
       # imagePullSecrets:
         # - name: dockerhub-secret
-      affinity:
-        nodeAffinity:
-          requiredDuringSchedulingIgnoredDuringExecution:
-            nodeSelectorTerms:
-              - matchExpressions:
-                  - key: kafka-cluster-role
-                    operator: In
-                    values:
-                      # - "kafka-cluster"  ## Affinity during streaming phase
-                      - "kafka-connect"    ## Affinity during snapshotting phase
+      # Commented out node affinity - requires nodes with label kafka-cluster-role=kafka-connect
+      # Uncomment when dedicated Kafka Connect nodes are available
+      # affinity:
+      #   nodeAffinity:
+      #     requiredDuringSchedulingIgnoredDuringExecution:
+      #       nodeSelectorTerms:
+      #         - matchExpressions:
+      #             - key: kafka-cluster-role
+      #               operator: In
+      #               values:
+      #                 # - "kafka-cluster"  ## Affinity during streaming phase
+      #                 - "kafka-connect"    ## Affinity during snapshotting phase
   ## resource during snapshot phase
   resources:
       requests:
