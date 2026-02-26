@@ -9,7 +9,7 @@ spec:
   version: 3.8.0
   replicas: 1  # Reduced from 2 for learning setup
   bootstrapServers: primary-kafka-bootstrap:9092
-  image: xxxxxxx.dkr.ecr.eu-central-1.amazonaws.com/kafka-cluster:latest  #docker.io/mm008/my-connect-cluster:latest
+  image: 367896522183.dkr.ecr.eu-central-1.amazonaws.com/kafka-cluster:latest  #docker.io/mm008/my-connect-cluster:latest
   rack:
     topologyKey: kubernetes.io/hostname   # topology.kubernetes.io/zone
   config:
@@ -44,6 +44,8 @@ spec:
             argocd.argoproj.io/compare-options: IgnoreExtraneous
             argocd.argoproj.io/sync-options: Prune=false
     pod:
+      imagePullSecrets:
+        - name: ecr-secret
       # imagePullSecrets:
         # - name: dockerhub-secret
       # Commented out node affinity - requires nodes with label kafka-cluster-role=kafka-connect
