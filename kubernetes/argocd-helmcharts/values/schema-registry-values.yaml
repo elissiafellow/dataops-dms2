@@ -10,6 +10,15 @@ kafka:
     repository: bitnamilegacy/kafka
     tag: 3.9.0-debian-12-r6
 
+# Override schema-registry image to use a valid tag
+# The chart version 22.0.0 may reference a non-existent image tag
+# Try using latest or a known working version
+image:
+  registry: docker.io
+  repository: bitnami/schema-registry
+  tag: latest  # Using latest tag - will pull the most recent available version
+  pullPolicy: IfNotPresent
+
 service:
   type: ClusterIP
 
