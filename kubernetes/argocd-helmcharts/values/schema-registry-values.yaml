@@ -1,42 +1,46 @@
+# Confluent Schema Registry Helm Chart Values
+# https://github.com/confluentinc/cp-helm-charts
+# Chart: cp-schema-registry
 
-# https://github.com/bitnami/charts/blob/main/bitnami/schema-registry/values.yaml
-# https://github.com/bitnami/charts/blob/main/bitnami/schema-registry/README.md
-global:
-  defaultStorageClass: "kafka-cluster-sc"
+# Image configuration
+image: confluentinc/cp-schema-registry
+imageTag: "7.7.1"
 
-kafka:
-  bootstrapServers: "primary-kafka-bootstrap:9092"
-  image:
-    repository: bitnamilegacy/kafka
-    tag: 3.9.0-debian-12-r6
+# Replica count
+replicas: 1
 
-image:
-  registry: docker.io
-  repository: confluentinc/cp-schema-registry
-  tag: 7.7.1
-  pullPolicy: IfNotPresent
-
-# Override command for Confluent image (Bitnami chart expects Bitnami entrypoint)
-command: ["/etc/confluent/docker/run"]
-
-# Environment variables for Confluent Schema Registry
-extraEnvVars:
-  - name: SCHEMA_REGISTRY_KAFKASTORE_BOOTSTRAP_SERVERS
-    value: "primary-kafka-bootstrap:9092"
-  - name: SCHEMA_REGISTRY_HOST_NAME
-    value: "schema-registry-0.schema-registry-headless.kafka.svc.cluster.local"
-  - name: SCHEMA_REGISTRY_LISTENERS
-    value: "http://0.0.0.0:8081"
-
+# Service configuration
 service:
   type: ClusterIP
+  port: 8081
 
-replicaCount: 1  # Reduced from 3 for learning setup
+# Kafka Store configuration (how Schema Registry connects to Kafka)
+kafkaStore:
+  bootstrapServers: "primary-kafka-bootstrap:9092"
 
-avroCompatibilityLevel: none
+# Schema Registry configuration overrides
+configurationOverrides:
+  listeners: "http://0.0.0.0:8081"
+  host.name: "schema-registry-0.schema-registry-headless.kafka.svc.cluster.local"
+  kafkastore.bootstrap.servers: "primary-kafka-bootstrap:9092"
 
-# Commented out node affinity - requires nodes with label kafka-cluster-role=kafka-cluster
-# Uncomment when dedicated Kafka nodes are available
+# Persistence configuration
+persistence:
+  enabled: true
+  size: 10Gi
+  storageClass: "kafka-cluster-sc"
+  accessMode: ReadWriteOnce
+
+# Resource limits
+resources:
+  requests:
+    cpu: "100m"
+    memory: "250Mi"
+  limits:
+    cpu: "250m"
+    memory: "1Gi"
+
+# Node affinity (commented out - same as before)
 # affinity:
 #   nodeAffinity:
 #     requiredDuringSchedulingIgnoredDuringExecution:
@@ -46,18 +50,3 @@ avroCompatibilityLevel: none
 #               operator: In
 #               values:
 #                 - kafka-cluster
-
-persistence:
-  enabled: true
-  size: 10Gi
-  storageClass: kafka-cluster-sc
-  accessModes:
-    - ReadWriteOnce
-
-resources:
-  requests:
-    cpu: "100m"
-    memory: "250Mi"
-  limits:
-    cpu: "250"
-    memory: "1Gi"
