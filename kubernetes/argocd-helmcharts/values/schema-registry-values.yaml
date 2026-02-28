@@ -19,6 +19,15 @@ image:
 # Override command for Confluent image (Bitnami chart expects Bitnami entrypoint)
 command: ["/etc/confluent/docker/run"]
 
+# Environment variables for Confluent Schema Registry
+extraEnvVars:
+  - name: SCHEMA_REGISTRY_KAFKASTORE_BOOTSTRAP_SERVERS
+    value: "primary-kafka-bootstrap:9092"
+  - name: SCHEMA_REGISTRY_HOST_NAME
+    value: "schema-registry-0.schema-registry-headless.kafka.svc.cluster.local"
+  - name: SCHEMA_REGISTRY_LISTENERS
+    value: "http://0.0.0.0:8081"
+
 service:
   type: ClusterIP
 
