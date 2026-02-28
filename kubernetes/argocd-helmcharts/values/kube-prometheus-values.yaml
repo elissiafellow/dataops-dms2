@@ -2,6 +2,7 @@
 # https://runbooks.prometheus-operator.dev/runbooks/kubernetes/cputhrottlinghigh/
 # https://mailtrap.io/blog/outlook-smtp/#How-to-configure-Outlook-IMAP-settings
 prometheusOperator:
+  enabled: true
   # nodeSelector:
   #   kafka-cluster-role: admin-tools
 
