@@ -2,12 +2,12 @@
 # https://runbooks.prometheus-operator.dev/runbooks/kubernetes/cputhrottlinghigh/
 # https://mailtrap.io/blog/outlook-smtp/#How-to-configure-Outlook-IMAP-settings
 prometheusOperator:
-  nodeSelector:
-    kafka-cluster-role: admin-tools
+  # nodeSelector:
+  #   kafka-cluster-role: admin-tools
 
 kube-state-metrics:
-  nodeSelector:
-    kafka-cluster-role: admin-tools
+  # nodeSelector:
+  #   kafka-cluster-role: admin-tools
 
 grafana:
   enabled: true
@@ -43,8 +43,8 @@ prometheus:
         app: strimzi
     labels:
       app: strimzi
-    nodeSelector:
-      kafka-cluster-role: admin-tools
+    # nodeSelector:
+    #   kafka-cluster-role: admin-tools
     resources:
       requests:
         memory: "1Gi"
@@ -63,8 +63,8 @@ prometheus:
     
 alertmanager:
     alertmanagerSpec:
-      nodeSelector:
-        kafka-cluster-role: admin-tools
+      # nodeSelector:
+      #   kafka-cluster-role: admin-tools
     config:
       global:
         smtp_smarthost: 'smtp.gmail.com:587'
