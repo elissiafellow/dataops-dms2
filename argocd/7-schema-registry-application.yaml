@@ -7,10 +7,17 @@ metadata:
     argocd.argoproj.io/sync-wave: "7"
 spec:
   project: default
-  source:
-    repoURL: 'https://github.com/elissiafellow/dataops-dms2.git'
-    targetRevision: main
-    path: kubernetes/production/schema-registry
+  sources:
+    - chart: schema-registry
+      repoURL: https://charts.bitnami.com/bitnami
+      targetRevision: 22.0.0 
+      helm:
+        releaseName: schema-registry
+        valueFiles:
+          - "$values/kubernetes/argocd-helmcharts/values/schema-registry-values.yaml"
+    - repoURL: 'git@github.com:moneYOUnion/dataops-dms.git'
+      targetRevision: master
+      ref: values
   destination:
     server: https://kubernetes.default.svc
     namespace: kafka

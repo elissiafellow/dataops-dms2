@@ -1,3 +1,4 @@
+
 # https://github.com/bitnami/charts/blob/main/bitnami/schema-registry/values.yaml
 # https://github.com/bitnami/charts/blob/main/bitnami/schema-registry/README.md
 global:
@@ -9,34 +10,13 @@ kafka:
     repository: bitnamilegacy/kafka
     tag: 3.9.0-debian-12-r6
 
-# Use Confluent's Schema Registry image (tag 8.0.4 exists and works)
-image:
-  registry: docker.io
-  repository: confluentinc/cp-schema-registry
-  tag: 8.0.4
-  pullPolicy: IfNotPresent
-
-# Override command for Confluent image (Bitnami chart expects Bitnami entrypoint)
-command: ["/etc/confluent/docker/run"]
-
-# Environment variables for Confluent Schema Registry
-extraEnvVars:
-  - name: SCHEMA_REGISTRY_KAFKASTORE_BOOTSTRAP_SERVERS
-    value: "primary-kafka-bootstrap:9092"
-  - name: SCHEMA_REGISTRY_HOST_NAME
-    value: "schema-registry-0.schema-registry-headless.kafka.svc.cluster.local"
-  - name: SCHEMA_REGISTRY_LISTENERS
-    value: "http://0.0.0.0:8081"
-
 service:
   type: ClusterIP
 
-replicaCount: 1  # Reduced from 3 for learning setup
+replicaCount: 3
 
 avroCompatibilityLevel: none
 
-# Commented out node affinity - requires nodes with label kafka-cluster-role=kafka-cluster
-# Uncomment when dedicated Kafka nodes are available
 # affinity:
 #   nodeAffinity:
 #     requiredDuringSchedulingIgnoredDuringExecution:
