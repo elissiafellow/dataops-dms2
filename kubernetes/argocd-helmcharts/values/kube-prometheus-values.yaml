@@ -16,6 +16,7 @@ grafana:
     type: ClusterIP
   # nodeSelector:
   #   kafka-cluster-role: admin-tools
+  affinity: {}
   resources:
     requests:
       memory: "512Mi"
