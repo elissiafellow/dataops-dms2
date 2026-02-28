@@ -14,8 +14,8 @@ grafana:
   adminPassword: "YourGrafanaPassword"
   service:
     type: ClusterIP
-  nodeSelector:
-    kafka-cluster-role: admin-tools
+  # nodeSelector:
+  #   kafka-cluster-role: admin-tools
   resources:
     requests:
       memory: "512Mi"
