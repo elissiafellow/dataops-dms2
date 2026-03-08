@@ -69,15 +69,17 @@ spec:
             # - name: KAFKA_CLUSTERS_1_ZOOKEEPER
             #   value: "secondary-zookeeper-client:2181"
 
-      affinity:
-        nodeAffinity:
-          requiredDuringSchedulingIgnoredDuringExecution:
-            nodeSelectorTerms:
-              - matchExpressions:
-                  - key: kafka-cluster-role
-                    operator: In
-                    values:
-                      - "admin-tools"
+      # Commented out node affinity - requires nodes with label kafka-cluster-role=admin-tools
+      # Uncomment when dedicated admin-tools nodes are available
+      # affinity:
+      #   nodeAffinity:
+      #     requiredDuringSchedulingIgnoredDuringExecution:
+      #       nodeSelectorTerms:
+      #         - matchExpressions:
+      #             - key: kafka-cluster-role
+      #               operator: In
+      #               values:
+      #                 - "admin-tools"
 ---
 apiVersion: v1
 kind: Service

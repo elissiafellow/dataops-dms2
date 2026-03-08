@@ -3,20 +3,23 @@
 # https://mailtrap.io/blog/outlook-smtp/#How-to-configure-Outlook-IMAP-settings
 prometheusOperator:
   enabled: true
-  nodeSelector:
-    kafka-cluster-role: admin-tools
+  # Commented out nodeSelector - requires nodes with label kafka-cluster-role=admin-tools
+  # nodeSelector:
+  #   kafka-cluster-role: admin-tools
 
 kube-state-metrics:
-  nodeSelector:
-    kafka-cluster-role: admin-tools
+  # Commented out nodeSelector - requires nodes with label kafka-cluster-role=admin-tools
+  # nodeSelector:
+  #   kafka-cluster-role: admin-tools
 
 grafana:
   enabled: true
   adminPassword: "YourGrafanaPassword"
   service:
     type: ClusterIP
-  nodeSelector:
-    kafka-cluster-role: admin-tools
+  # Commented out nodeSelector - requires nodes with label kafka-cluster-role=admin-tools
+  # nodeSelector:
+  #   kafka-cluster-role: admin-tools
   resources:
     requests:
       memory: "512Mi"
@@ -44,8 +47,9 @@ prometheus:
         app: strimzi
     labels:
       app: strimzi
-    nodeSelector:
-      kafka-cluster-role: admin-tools
+    # Commented out nodeSelector - requires nodes with label kafka-cluster-role=admin-tools
+    # nodeSelector:
+    #   kafka-cluster-role: admin-tools
     resources:
       requests:
         memory: "1Gi"
@@ -66,8 +70,9 @@ alertmanager:
     enabled: true
     alertmanagerSpec:
       portName: web
-      nodeSelector:
-        kafka-cluster-role: admin-tools
+      # Commented out nodeSelector - requires nodes with label kafka-cluster-role=admin-tools
+      # nodeSelector:
+      #   kafka-cluster-role: admin-tools
     config:
       global:
         smtp_smarthost: 'smtp.gmail.com:587'

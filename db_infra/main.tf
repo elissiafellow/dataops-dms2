@@ -194,3 +194,158 @@ resource "aws_db_instance" "dest_db" {
     Database    = "MySQL"
   }
 }
+
+# ============================================================================
+# AWS Secrets Manager secrets for Kafka Connectors
+# These secrets are used by External Secrets Operator to sync to Kubernetes
+# ============================================================================
+
+# ============================================================================
+# INNOV8-SYSTEM SECRETS
+# ============================================================================
+
+resource "aws_secretsmanager_secret" "source_innov8_mysql" {
+  name        = "source-innov8-mysql"
+  description = "MySQL connection credentials for innov8-system source database"
+
+  tags = {
+    Name        = "source-innov8-mysql"
+    Environment = var.environment
+    Purpose     = "Kafka-Connector"
+  }
+}
+
+resource "aws_secretsmanager_secret_version" "source_innov8_mysql" {
+  secret_id = aws_secretsmanager_secret.source_innov8_mysql.id
+  secret_string = jsonencode({
+    user     = var.db_username
+    password = var.db_password
+    host     = aws_db_instance.source_db.address
+    database = "innov8-system"
+  })
+
+  depends_on = [aws_db_instance.source_db]
+}
+
+resource "aws_secretsmanager_secret" "destination_innov8_mysql" {
+  name        = "destination-innov8-mysql"
+  description = "MySQL connection credentials for innov8-system destination database"
+
+  tags = {
+    Name        = "destination-innov8-mysql"
+    Environment = var.environment
+    Purpose     = "Kafka-Connector"
+  }
+}
+
+resource "aws_secretsmanager_secret_version" "destination_innov8_mysql" {
+  secret_id = aws_secretsmanager_secret.destination_innov8_mysql.id
+  secret_string = jsonencode({
+    user     = var.db_username
+    password = var.db_password
+    host     = aws_db_instance.dest_db.address
+    database = "innov8-system"
+  })
+
+  depends_on = [aws_db_instance.dest_db]
+}
+
+# ============================================================================
+# NI SECRETS
+# ============================================================================
+
+resource "aws_secretsmanager_secret" "source_ni_mysql" {
+  name        = "source-ni-mysql"
+  description = "MySQL connection credentials for ni source database"
+
+  tags = {
+    Name        = "source-ni-mysql"
+    Environment = var.environment
+    Purpose     = "Kafka-Connector"
+  }
+}
+
+resource "aws_secretsmanager_secret_version" "source_ni_mysql" {
+  secret_id = aws_secretsmanager_secret.source_ni_mysql.id
+  secret_string = jsonencode({
+    user     = var.db_username
+    password = var.db_password
+    host     = aws_db_instance.source_db.address
+    database = "ni"
+  })
+
+  depends_on = [aws_db_instance.source_db]
+}
+
+resource "aws_secretsmanager_secret" "destination_ni_mysql" {
+  name        = "destination-ni-mysql"
+  description = "MySQL connection credentials for ni destination database"
+
+  tags = {
+    Name        = "destination-ni-mysql"
+    Environment = var.environment
+    Purpose     = "Kafka-Connector"
+  }
+}
+
+resource "aws_secretsmanager_secret_version" "destination_ni_mysql" {
+  secret_id = aws_secretsmanager_secret.destination_ni_mysql.id
+  secret_string = jsonencode({
+    user     = var.db_username
+    password = var.db_password
+    host     = aws_db_instance.dest_db.address
+    database = "ni"
+  })
+
+  depends_on = [aws_db_instance.dest_db]
+}
+
+# ============================================================================
+# LOYALTY SECRETS
+# ============================================================================
+
+resource "aws_secretsmanager_secret" "source_loyalty_mysql" {
+  name        = "source-loyalty-mysql"
+  description = "MySQL connection credentials for loyalty source database"
+
+  tags = {
+    Name        = "source-loyalty-mysql"
+    Environment = var.environment
+    Purpose     = "Kafka-Connector"
+  }
+}
+
+resource "aws_secretsmanager_secret_version" "source_loyalty_mysql" {
+  secret_id = aws_secretsmanager_secret.source_loyalty_mysql.id
+  secret_string = jsonencode({
+    user     = var.db_username
+    password = var.db_password
+    host     = aws_db_instance.source_db.address
+    database = "loyalty"
+  })
+
+  depends_on = [aws_db_instance.source_db]
+}
+
+resource "aws_secretsmanager_secret" "destination_loyalty_mysql" {
+  name        = "destination-loyalty-mysql"
+  description = "MySQL connection credentials for loyalty destination database"
+
+  tags = {
+    Name        = "destination-loyalty-mysql"
+    Environment = var.environment
+    Purpose     = "Kafka-Connector"
+  }
+}
+
+resource "aws_secretsmanager_secret_version" "destination_loyalty_mysql" {
+  secret_id = aws_secretsmanager_secret.destination_loyalty_mysql.id
+  secret_string = jsonencode({
+    user     = var.db_username
+    password = var.db_password
+    host     = aws_db_instance.dest_db.address
+    database = "loyalty"
+  })
+
+  depends_on = [aws_db_instance.dest_db]
+}
