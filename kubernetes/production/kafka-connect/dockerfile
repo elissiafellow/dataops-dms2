@@ -7,8 +7,16 @@ ARG CONFLUENT_VERSION
 RUN confluent-hub install --no-prompt confluentinc/kafka-connect-avro-converter:${CONFLUENT_VERSION}
 
 # Install Debezium MySQL Connector from Maven
-FROM quay.io/strimzi/kafka:latest-kafka-3.8.0
+# Using pinned digest for amd64 architecture to ensure consistency with production
+FROM quay.io/strimzi/kafka@sha256:65744f0616afeb3dc4f7c59fe79c8e0cadafe1e057ad50bfa87ae8753ac8bca3 
 USER root:root
+
+# Copy kafka_connect_config_generator.sh and kafka_connect_run.sh from local files
+# These scripts are needed to generate /tmp/strimzi-connect.properties from environment variables
+# The current base image uses file-based config, but production uses the generator script
+# These files were extracted from production image v2 to ensure compatibility
+COPY kafka_connect_config_generator.sh /opt/kafka/kafka_connect_config_generator.sh
+COPY kafka_connect_run.sh /opt/kafka/kafka_connect_run.sh
 
 # Copy Confluent Avro converter plugin from the Confluent image
 RUN mkdir -p /opt/kafka/plugins/avro/
@@ -43,6 +51,11 @@ RUN mkdir -p /opt/kafka/plugins/mysql-connector-java \
     && curl -f -L \
     --output /opt/kafka/plugins/mysql-connector-java.jar \
     https://repo1.maven.org/maven2/mysql/mysql-connector-java/8.0.22/mysql-connector-java-8.0.22.jar
+
+# Create custom-config directory and empty properties file (required by kafka_connect_run.sh script)
+# The script tries to source this file at line 21, and will fail if it doesn't exist
+RUN mkdir -p /opt/kafka/custom-config \
+    && touch /opt/kafka/custom-config/kafka-connect.properties
 
 # Ensure correct permissions for the plugins
 USER 1001
