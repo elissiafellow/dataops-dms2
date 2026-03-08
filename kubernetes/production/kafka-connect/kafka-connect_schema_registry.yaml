@@ -9,7 +9,7 @@ spec:
   version: 3.8.0
   replicas: 1  # Reduced from 2 for learning setup
   bootstrapServers: primary-kafka-bootstrap:9092
-  image: 367896522183.dkr.ecr.eu-central-1.amazonaws.com/kafka-cluster:latest  #docker.io/mm008/my-connect-cluster:latest
+  image: 367896522183.dkr.ecr.eu-central-1.amazonaws.com/kafka-cluster:v2  #docker.io/mm008/my-connect-cluster:latest
   rack:
     topologyKey: kubernetes.io/hostname   # topology.kubernetes.io/zone
   config:
