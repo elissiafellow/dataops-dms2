@@ -18,6 +18,9 @@ USER root:root
 COPY kafka_connect_config_generator.sh /opt/kafka/kafka_connect_config_generator.sh
 COPY kafka_connect_run.sh /opt/kafka/kafka_connect_run.sh
 
+# Make scripts executable
+RUN chmod +x /opt/kafka/kafka_connect_config_generator.sh /opt/kafka/kafka_connect_run.sh
+
 # Copy Confluent Avro converter plugin from the Confluent image
 RUN mkdir -p /opt/kafka/plugins/avro/
 COPY --from=cp /usr/share/confluent-hub-components/confluentinc-kafka-connect-avro-converter/lib /opt/kafka/plugins/avro/
